@@ -1,0 +1,1 @@
+# Leitor dos arquivos de Dados Abertos
