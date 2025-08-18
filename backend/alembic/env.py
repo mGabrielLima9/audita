@@ -17,6 +17,7 @@ from app.core.database import Base
 from app.models.empresa import Empresa
 from app.models.declaracao_pgdas import DeclaracaoPGDAS
 from app.models.pagamento_daf import PagamentoDAF
+from app.models.estabelecimento import Estabelecimento
 
 # --- NOSSAS ADIÇÕES - FIM ---
 
