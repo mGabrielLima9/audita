@@ -15,6 +15,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 from app.core.database import SessionLocal, engine
 from app.models.empresa import Empresa
 from app.models.estabelecimento import Estabelecimento
+from app.models.declaracao_pgdas import DeclaracaoPGDAS
+from app.models.pagamento_daf import PagamentoDAF
 from app.core.database import Base
 
 # --- CONFIGURAÇÃO ---
@@ -25,10 +27,36 @@ TARGET_MUNICIPIO_CODIGO = '0841'
 def carregar_dados_abertos(db: Session):
     logging.info(f"Iniciando carga de dados para o município {TARGET_MUNICIPIO_CODIGO}...")
 
-    logging.info("Limpando tabelas existentes...")
-    db.query(Estabelecimento).delete()
-    db.query(Empresa).delete()
+    logging.info("Limpando tabelas existentes na ordem correta...")
+    
+    # ORDEM CORRETA: Primeiro as tabelas filhas, depois as tabelas pais
+    
+    # 1. Declarações PGDAS (filha - referencia empresas)
+    declaracoes_count = db.query(DeclaracaoPGDAS).count()
+    if declaracoes_count > 0:
+        logging.info(f"Limpando {declaracoes_count} declarações PGDAS...")
+        db.query(DeclaracaoPGDAS).delete()
+    
+    # 2. Pagamentos DAF (filha - referencia empresas)
+    pagamentos_count = db.query(PagamentoDAF).count()
+    if pagamentos_count > 0:
+        logging.info(f"Limpando {pagamentos_count} pagamentos DAF...")
+        db.query(PagamentoDAF).delete()
+    
+    # 3. Estabelecimentos (filha - referencia empresas)
+    estabelecimentos_count = db.query(Estabelecimento).count()
+    if estabelecimentos_count > 0:
+        logging.info(f"Limpando {estabelecimentos_count} estabelecimentos...")
+        db.query(Estabelecimento).delete()
+    
+    # 4. Empresas (pai)
+    empresas_count = db.query(Empresa).count()
+    if empresas_count > 0:
+        logging.info(f"Limpando {empresas_count} empresas...")
+        db.query(Empresa).delete()
+    
     db.commit()
+    logging.info("✅ Limpeza concluída! Iniciando carga dos dados abertos...")
 
     logging.info("Fase 1: Lendo arquivos de Estabelecimentos...")
     estab_files = sorted([f for f in os.listdir(DADOS_ABERTOS_PATH) if 'ESTABELECIMENTOS' in str(f).upper() and str(f).endswith('.zip')])
