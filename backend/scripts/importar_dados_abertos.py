@@ -8,7 +8,6 @@ import logging
 import zipfile
 import sys
 
-# Adiciona a pasta 'backend' ao caminho de busca do Python
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,7 +30,7 @@ def carregar_dados_abertos(db: Session):
     db.query(Empresa).delete()
     db.commit()
 
-    logging.info("Fase 1: Lendo arquivos de Estabelecimentos para encontrar CNPJs do município...")
+    logging.info("Fase 1: Lendo arquivos de Estabelecimentos...")
     estab_files = sorted([f for f in os.listdir(DADOS_ABERTOS_PATH) if 'ESTABELECIMENTOS' in str(f).upper() and str(f).endswith('.zip')])
     
     lista_estabelecimentos_municipio = []
@@ -47,20 +46,21 @@ def carregar_dados_abertos(db: Session):
                         lista_estabelecimentos_municipio.append(municipio_chunk)
     
     if not lista_estabelecimentos_municipio:
-        logging.warning("Nenhum estabelecimento encontrado para o município. Encerrando.")
+        logging.warning("Nenhum estabelecimento encontrado. Encerrando.")
         return
         
     df_estabelecimentos_alvo = pd.concat(lista_estabelecimentos_municipio, ignore_index=True)
-    # ATUALIZAÇÃO: Renomeando mais uma coluna que vamos usar (a de situação cadastral)
+    # ATUALIZAÇÃO: Renomeando os novos campos que vamos usar
     df_estabelecimentos_alvo = df_estabelecimentos_alvo.rename(columns={
-        0: 'CNPJ_BASICO', 1: 'CNPJ_ORDEM', 2: 'CNPJ_DV', 5: 'SITUACAO_CADASTRAL',
-        14: 'LOGRADOURO', 15: 'NUMERO', 17: 'BAIRRO', 18: 'CEP', 19: 'UF'
+        0: 'CNPJ_BASICO', 1: 'CNPJ_ORDEM', 2: 'CNPJ_DV', 4: 'NOME_FANTASIA', 5: 'SITUACAO_CADASTRAL',
+        10: 'DATA_INICIO_ATIVIDADE', 14: 'LOGRADOURO', 15: 'NUMERO', 17: 'BAIRRO', 18: 'CEP', 19: 'UF'
     })
     cnpjs_base_alvo = df_estabelecimentos_alvo['CNPJ_BASICO'].unique().tolist()
     logging.info(f"Fase 1 concluída: {len(df_estabelecimentos_alvo)} estabelecimentos e {len(cnpjs_base_alvo)} empresas únicas encontradas.")
 
     logging.info("Fase 2: Lendo arquivos de Empresas e Simples...")
     def read_zip_files_to_dataframe(pattern: str, col_names: list, use_cnpj_filter: list):
+        # (código desta função permanece o mesmo)
         dfs = []
         zip_files = sorted([f for f in os.listdir(DADOS_ABERTOS_PATH) if pattern in str(f).upper() and str(f).endswith('.zip')])
         for file_name in zip_files:
@@ -82,6 +82,7 @@ def carregar_dados_abertos(db: Session):
     df_simples = read_zip_files_to_dataframe('SIMPLES', col_names_simples, cnpjs_base_alvo)
 
     logging.info("Fase 3: Inserindo dados na tabela 'empresas'...")
+    # (código desta fase permanece o mesmo)
     empresas_para_inserir = []
     for index, row in df_empresas.iterrows():
         simples_info = df_simples[df_simples['CNPJ_BASICO'] == row['CNPJ_BASICO']].iloc[0] if not df_simples[df_simples['CNPJ_BASICO'] == row['CNPJ_BASICO']].empty else None
@@ -99,6 +100,9 @@ def carregar_dados_abertos(db: Session):
     logging.info("Fase 4: Inserindo dados na tabela 'estabelecimentos'...")
     mapa_cnpj_id = {emp.cnpj: emp.id for emp in db.query(Empresa.id, Empresa.cnpj).all()}
     
+    # ATUALIZAÇÃO: Converte a coluna de data para o formato correto antes de inserir
+    df_estabelecimentos_alvo['DATA_INICIO_ATIVIDADE'] = pd.to_datetime(df_estabelecimentos_alvo['DATA_INICIO_ATIVIDADE'], format='%Y%m%d', errors='coerce')
+
     estabelecimentos_para_inserir = []
     for index, row in df_estabelecimentos_alvo.iterrows():
         empresa_id = mapa_cnpj_id.get(row['CNPJ_BASICO'])
@@ -111,8 +115,10 @@ def carregar_dados_abertos(db: Session):
                 bairro=row['BAIRRO'],
                 cep=row['CEP'],
                 uf=row['UF'],
-                # ATUALIZAÇÃO: Adicionando o novo campo
-                situacao_cadastral=row['SITUACAO_CADASTRAL']
+                situacao_cadastral=row['SITUACAO_CADASTRAL'],
+                # ATUALIZAÇÃO: Adicionando os novos campos
+                nome_fantasia=row['NOME_FANTASIA'],
+                data_inicio_atividade=row['DATA_INICIO_ATIVIDADE']
             ))
     
     db.bulk_save_objects(estabelecimentos_para_inserir)

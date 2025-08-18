@@ -1,4 +1,6 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+# backend/app/models/estabelecimento.py
+
+from sqlalchemy import Column, String, Integer, ForeignKey, Date # Adicione 'Date' aqui
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -19,5 +21,8 @@ class Estabelecimento(Base):
     cep = Column(String(8))
     uf = Column(String(2))
     
-    # NOVO CAMPO ADICIONADO AQUI
-    situacao_cadastral = Column(String(2)) # Para guardar o código '02', '04', '08', etc.
+    situacao_cadastral = Column(String(2))
+
+    # --- NOVOS CAMPOS ADICIONADOS AQUI ---
+    nome_fantasia = Column(String)
+    data_inicio_atividade = Column(Date)
