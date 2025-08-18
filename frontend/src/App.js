@@ -1,7 +1,11 @@
+import React from 'react';
+import Dashboard from './pages/Dashboard';
+import './App.css';
+
 function App() {
   return (
     <div className="App">
-      <h1>Auditor Digital</h1>
+      <Dashboard />
     </div>
   );
 }
