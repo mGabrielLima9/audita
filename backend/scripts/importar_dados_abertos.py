@@ -41,6 +41,7 @@ def carregar_dados_abertos(db: Session):
             with zf.open(csv_file_in_zip, 'r') as f:
                 chunk_iter = pd.read_csv(f, sep=';', header=None, dtype=str, encoding='latin1', chunksize=100000)
                 for chunk in chunk_iter:
+                    chunk.iloc[:, 20] = chunk.iloc[:, 20].fillna('').str.strip()
                     municipio_chunk = chunk[chunk.iloc[:, 20] == TARGET_MUNICIPIO_CODIGO]
                     if not municipio_chunk.empty:
                         lista_estabelecimentos_municipio.append(municipio_chunk)
@@ -50,7 +51,6 @@ def carregar_dados_abertos(db: Session):
         return
         
     df_estabelecimentos_alvo = pd.concat(lista_estabelecimentos_municipio, ignore_index=True)
-    # ATUALIZAÇÃO: Renomeando os novos campos que vamos usar
     df_estabelecimentos_alvo = df_estabelecimentos_alvo.rename(columns={
         0: 'CNPJ_BASICO', 1: 'CNPJ_ORDEM', 2: 'CNPJ_DV', 4: 'NOME_FANTASIA', 5: 'SITUACAO_CADASTRAL',
         10: 'DATA_INICIO_ATIVIDADE', 14: 'LOGRADOURO', 15: 'NUMERO', 17: 'BAIRRO', 18: 'CEP', 19: 'UF'
@@ -60,7 +60,6 @@ def carregar_dados_abertos(db: Session):
 
     logging.info("Fase 2: Lendo arquivos de Empresas e Simples...")
     def read_zip_files_to_dataframe(pattern: str, col_names: list, use_cnpj_filter: list):
-        # (código desta função permanece o mesmo)
         dfs = []
         zip_files = sorted([f for f in os.listdir(DADOS_ABERTOS_PATH) if pattern in str(f).upper() and str(f).endswith('.zip')])
         for file_name in zip_files:
@@ -76,23 +75,28 @@ def carregar_dados_abertos(db: Session):
         return pd.concat(dfs, ignore_index=True)
 
     col_names_emp = ['CNPJ_BASICO', 'RAZAO_SOCIAL', 'NATUREZA_JURIDICA', 'QUALIF_RESP', 'CAPITAL_SOCIAL', 'PORTE_EMPRESA', 'ENTE_FEDERATIVO']
-    df_empresas = read_zip_files_to_dataframe('EMPRESAS', col_names_emp, cnpjs_base_alvo)
+    df_empresas = read_zip_files_to_dataframe('EMPRESAS', col_names_emp, cnpjs_base_alvo).drop_duplicates(subset=['CNPJ_BASICO']).set_index('CNPJ_BASICO')
     
     col_names_simples = ['CNPJ_BASICO', 'OPCAO_PELO_SIMPLES', 'DATA_OPCAO_SIMPLES', 'DATA_EXCLUSAO_SIMPLES', 'OPCAO_PELO_MEI', 'DATA_OPCAO_MEI', 'DATA_EXCLUSAO_MEI']
-    df_simples = read_zip_files_to_dataframe('SIMPLES', col_names_simples, cnpjs_base_alvo)
+    df_simples = read_zip_files_to_dataframe('SIMPLES', col_names_simples, cnpjs_base_alvo).drop_duplicates(subset=['CNPJ_BASICO']).set_index('CNPJ_BASICO')
 
     logging.info("Fase 3: Inserindo dados na tabela 'empresas'...")
-    # (código desta fase permanece o mesmo)
     empresas_para_inserir = []
-    for index, row in df_empresas.iterrows():
-        simples_info = df_simples[df_simples['CNPJ_BASICO'] == row['CNPJ_BASICO']].iloc[0] if not df_simples[df_simples['CNPJ_BASICO'] == row['CNPJ_BASICO']].empty else None
-        empresas_para_inserir.append(Empresa(
-            cnpj=row['CNPJ_BASICO'],
-            razao_social=row['RAZAO_SOCIAL'],
-            porte=row['PORTE_EMPRESA'],
-            optante_simples=simples_info['OPCAO_PELO_SIMPLES'] == 'S' if simples_info is not None else False,
-            optante_mei=simples_info['OPCAO_PELO_MEI'] == 'S' if simples_info is not None else False
-        ))
+    for cnpj in cnpjs_base_alvo:
+        empresa_data = df_empresas.loc[cnpj] if cnpj in df_empresas.index else None
+        simples_data = df_simples.loc[cnpj] if cnpj in df_simples.index else None
+
+        # --- LÓGICA ATUALIZADA (SUA SUGESTÃO) ---
+        # Usa o valor encontrado ou None (que vira NULL no banco)
+        nova_empresa = Empresa(
+            cnpj=cnpj,
+            razao_social=empresa_data['RAZAO_SOCIAL'] if empresa_data is not None else None,
+            porte=empresa_data['PORTE_EMPRESA'] if empresa_data is not None else None,
+            optante_simples=simples_data['OPCAO_PELO_SIMPLES'] == 'S' if simples_data is not None else False,
+            optante_mei=simples_data['OPCAO_PELO_MEI'] == 'S' if simples_data is not None else False
+        )
+        empresas_para_inserir.append(nova_empresa)
+    
     db.bulk_save_objects(empresas_para_inserir)
     db.commit()
     logging.info(f"{len(empresas_para_inserir)} registros inseridos na tabela 'empresas'.")
@@ -100,7 +104,6 @@ def carregar_dados_abertos(db: Session):
     logging.info("Fase 4: Inserindo dados na tabela 'estabelecimentos'...")
     mapa_cnpj_id = {emp.cnpj: emp.id for emp in db.query(Empresa.id, Empresa.cnpj).all()}
     
-    # ATUALIZAÇÃO: Converte a coluna de data para o formato correto antes de inserir
     df_estabelecimentos_alvo['DATA_INICIO_ATIVIDADE'] = pd.to_datetime(df_estabelecimentos_alvo['DATA_INICIO_ATIVIDADE'], format='%Y%m%d', errors='coerce')
 
     estabelecimentos_para_inserir = []
@@ -116,7 +119,6 @@ def carregar_dados_abertos(db: Session):
                 cep=row['CEP'],
                 uf=row['UF'],
                 situacao_cadastral=row['SITUACAO_CADASTRAL'],
-                # ATUALIZAÇÃO: Adicionando os novos campos
                 nome_fantasia=row['NOME_FANTASIA'],
                 data_inicio_atividade=row['DATA_INICIO_ATIVIDADE']
             ))
