@@ -1,4 +1,4 @@
-/* frontend/src/App.css */
+/* App.css */
 
 :root {
   /* Paleta de cores minimalista */
@@ -58,6 +58,7 @@ body {
   color: white;
   padding: 0;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 }
 
 .sidebar-header {
@@ -152,11 +153,25 @@ body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  gap: var(--spacing-lg);
 }
 
+/* Adicionando Breadcrumb com estilos */
 .breadcrumb {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb a {
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-right: var(--spacing-sm);
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
 }
 
 /* Page Content */
@@ -198,6 +213,7 @@ body {
 @media (max-width: 768px) {
   .sidebar {
     width: 200px;
+    /* Agora a sidebar tem uma transição suave para dispositivos menores */
   }
   
   .header-content {
@@ -205,4 +221,33 @@ body {
     gap: var(--spacing-sm);
     align-items: flex-start;
   }
+
+  .breadcrumb {
+    display: block;
+    text-align: left;
+  }
+
+  .page-content {
+    padding: var(--spacing-sm);
+  }
+
+  /* Ajustando a largura do gráfico e conteúdo */
+  .chart {
+    width: 100%;
+    height: auto;
+  }
+
+  .nav-item {
+    font-size: var(--font-size-sm);
+  }
+
+  .nav-item:hover {
+    background: var(--color-sidebar-hover);
+  }
+
+  .nav-item.active {
+    background: var(--color-sidebar-active);
+    color: white;
+  }
 }
+
