@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme, Box } from '@mui/material';
 import './App.css';
 import Sidebar from './components/Sidebar.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import SubLimiteSN from './pages/SubLimiteSN';
 
 const theme = createTheme({
   palette: {
@@ -22,7 +23,7 @@ const theme = createTheme({
   },
 });
 
-const App = () => {
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
@@ -63,6 +64,7 @@ const App = () => {
                 <p>Conteúdo do Diagnóstico Fiscal será implementado aqui.</p>
               </div>
             } />
+            <Route path="/sub-limite-sn" element={<SubLimiteSN />} />
           </Routes>
         </Box>
       </Box>

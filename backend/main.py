@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # Importa o nosso novo arquivo de endpoint
 from app.api.endpoints import dashboard
+from app.api.endpoints import sub_limite
 
 app = FastAPI(title='Auditor Digital API')
 
@@ -18,6 +19,7 @@ app.add_middleware(
 
 # Inclui as rotas do dashboard na nossa API principal
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(sub_limite.router, prefix="/api/sub-limite", tags=["Sub Limite SN"])
 
 @app.get('/')
 def read_root():

@@ -166,42 +166,324 @@ const Sidebar = () => {
           {expandedMenus.simplesNacional ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
 
-        <Collapse in={expandedMenus.simplesNacional} timeout="auto">
-          <List component="div" disablePadding sx={{ bgcolor: '#fff' }}>
+        <Collapse in={expandedMenus.simplesNacional} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
             <ListItemButton
               component={Link}
-              to="/sub-limite-sn"
-              selected={isActive('/sub-limite-sn')}
+              to="/declaracoes-sn"
+              selected={isActive('/declaracoes-sn')}
               sx={{
                 pl: 6,
-                py: 1.5,
+                borderRadius: 1,
+                mb: 0.5,
                 '&.Mui-selected': {
-                  backgroundColor: '#1976d2',
+                  bgcolor: '#4CAF50',
                   color: '#fff',
-                  '& .MuiListItemIcon-root': {
-                    color: '#fff'
-                  },
-                  '&:hover': {
-                    backgroundColor: '#1565c0'
-                  }
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
                 },
                 '&:hover': {
-                  backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                  transition: 'background-color 0.2s'
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
                 }
               }}
             >
-              <ListItemIcon sx={{
-                minWidth: 40,
-                color: isActive('/sub-limite-sn') ? '#fff' : '#6c757d'
-              }}>
-                <SearchIcon />
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/declaracoes-sn') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
               </ListItemIcon>
               <ListItemText
-                primary="Sub Limite SN"
+                primary="Declarações"
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
-                  fontFamily: '"Roboto", "Arial", sans-serif'
+                  fontWeight: isActive('/declaracoes-sn') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/contribuintes-omissos"
+              selected={isActive('/contribuintes-omissos')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/contribuintes-omissos') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Contribuintes Omissos"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/contribuintes-omissos') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/contribuintes-inadimplentes"
+              selected={isActive('/contribuintes-inadimplentes')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/contribuintes-inadimplentes') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Contribuintes Inadimplentes"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/contribuintes-inadimplentes') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/contribuintes-externos"
+              selected={isActive('/contribuintes-externos')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/contribuintes-externos') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Contribuintes Externos"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/contribuintes-externos') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/iss-outros-munic"
+              selected={isActive('/iss-outros-munic')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/iss-outros-munic') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="ISS Outras Munic"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/iss-outros-munic') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/atividade-contabil"
+              selected={isActive('/atividade-contabil')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/atividade-contabil') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Atividade Contábil"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/atividade-contabil') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/regime-especial"
+              selected={isActive('/regime-especial')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/regime-especial') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Regime Especial"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/regime-especial') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/declaracoes-retificadas"
+              selected={isActive('/declaracoes-retificadas')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/declaracoes-retificadas') ? '#fff' : '#424242' }}>
+                <DescriptionIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Declarações Retificadas"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/declaracoes-retificadas') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/parcelamentos-sn"
+              selected={isActive('/parcelamentos-sn')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/parcelamentos-sn') ? '#fff' : '#424242' }}>
+                <PaymentIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Parcelamentos"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/parcelamentos-sn') ? 500 : 400
+                }}
+              />
+            </ListItemButton>
+          
+            <ListItemButton
+              component={Link}
+              to="/analise-dados-sn"
+              selected={isActive('/analise-dados-sn')}
+              sx={{
+                pl: 6,
+                borderRadius: 1,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: '#4CAF50',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#43A047' },
+                  '& .MuiListItemIcon-root': { color: '#fff' }
+                },
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                  transition: 'all 0.2s ease-in-out'
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isActive('/analise-dados-sn') ? '#fff' : '#424242' }}>
+                <AnalyticsIcon sx={{ fontSize: 20 }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Análise de Dados"
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  fontWeight: isActive('/analise-dados-sn') ? 500 : 400
                 }}
               />
             </ListItemButton>
