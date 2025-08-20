@@ -181,6 +181,22 @@
   gap: var(--spacing-xs);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.legend-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.legend-item.disabled {
+  opacity: 0.5;
+}
+
+.legend-item.disabled .legend-color {
+  opacity: 0.5;
 }
 
 .legend-color {

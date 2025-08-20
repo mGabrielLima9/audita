@@ -79,6 +79,22 @@ const Dashboard = () => {
     { mes: 'Dez', totalDAS: 2800000.00, totalDASPago: 25000000.00, totalISS: 78000, totalISSPago: 73000 }
   ];
 
+  // Adicionar estado para controlar visibilidade das séries
+  const [visibleSeries, setVisibleSeries] = useState({
+    totalDAS: true,
+    totalDASPago: true,
+    totalISS: true,
+    totalISSPago: true
+  });
+
+  // Função para alternar visibilidade de uma série
+  const toggleSeries = (seriesName) => {
+    setVisibleSeries(prev => ({
+      ...prev,
+      [seriesName]: !prev[seriesName]
+    }));
+  };
+
   if (loading && !dashboardData) {
     return (
       <div className="dashboard-container">
@@ -207,19 +223,35 @@ const Dashboard = () => {
             <h3>Total DAS x Total ISS / Competência</h3>
             
             <div className="chart-legend">
-              <div className="legend-item">
+              <div 
+                className={`legend-item ${!visibleSeries.totalDAS ? 'disabled' : ''}`}
+                onClick={() => toggleSeries('totalDAS')}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="legend-color blue"></div>
                 <span>Total DAS Apuração</span>
               </div>
-              <div className="legend-item">
+              <div 
+                className={`legend-item ${!visibleSeries.totalDASPago ? 'disabled' : ''}`}
+                onClick={() => toggleSeries('totalDASPago')}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="legend-color green"></div>
                 <span>Total DAS Pago</span>
               </div>
-              <div className="legend-item">
+              <div 
+                className={`legend-item ${!visibleSeries.totalISS ? 'disabled' : ''}`}
+                onClick={() => toggleSeries('totalISS')}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="legend-color orange"></div>
                 <span>Total ISS Apuração</span>
               </div>
-              <div className="legend-item">
+              <div 
+                className={`legend-item ${!visibleSeries.totalISSPago ? 'disabled' : ''}`}
+                onClick={() => toggleSeries('totalISSPago')}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="legend-color red"></div>
                 <span>Total ISS Pago</span>
               </div>
@@ -235,11 +267,10 @@ const Dashboard = () => {
                     formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
                     labelFormatter={(label) => `${label} 2025`}
                   />
-                  <Legend />
-                  <Bar dataKey="totalDAS" fill="#2563eb" name="Total DAS Apuração" />
-                  <Bar dataKey="totalDASPago" fill="#16a34a" name="Total DAS Pago" />
-                  <Bar dataKey="totalISS" fill="#f59e0b" name="Total ISS Apuração" />
-                  <Bar dataKey="totalISSPago" fill="#dc2626" name="Total ISS Pago" />
+                  {visibleSeries.totalDAS && <Bar dataKey="totalDAS" fill="#2563eb" name="Total DAS Apuração" />}
+                  {visibleSeries.totalDASPago && <Bar dataKey="totalDASPago" fill="#16a34a" name="Total DAS Pago" />}
+                  {visibleSeries.totalISS && <Bar dataKey="totalISS" fill="#f59e0b" name="Total ISS Apuração" />}
+                  {visibleSeries.totalISSPago && <Bar dataKey="totalISSPago" fill="#dc2626" name="Total ISS Pago" />}
                 </BarChart>
               </ResponsiveContainer>
             </div>
