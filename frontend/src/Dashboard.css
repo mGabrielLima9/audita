@@ -387,3 +387,264 @@
     padding: var(--spacing-sm);
   }
 }
+
+/* Estilos para a grade de anos */
+.anos-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ano-button {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ano-button.selected {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Estilos para a grade de meses */
+.meses-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mes-button {
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mes-button.selected {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Estilo para o botão Pesquisar */
+.pesquisar-btn {
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 24px;
+  align-self: flex-end;
+}
+
+.pesquisar-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .meses-buttons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .meses-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .anos-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* Estilos para os filtros */
+.filters-section {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-select {
+  min-width: 200px;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  color: #1f2937;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.filter-select:hover {
+  border-color: #9ca3af;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.pesquisar-btn {
+  padding: 10px 24px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: 42px;
+}
+
+.pesquisar-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .pesquisar-btn {
+    width: 100%;
+  }
+}
+
+/* Estilos para o DatePicker */
+.react-datepicker-wrapper {
+  width: 200px;
+}
+
+.react-datepicker {
+  font-family: var(--font-family);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__header {
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding-top: 10px;
+}
+
+.react-datepicker__month,
+.react-datepicker__year {
+  margin: 0.4rem;
+  text-align: center;
+}
+
+.react-datepicker__year-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 180px;
+  justify-content: center;
+}
+
+.react-datepicker__year-text {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.react-datepicker__year-text:hover {
+  background-color: #e5e7eb;
+}
+
+.react-datepicker__year-text--selected {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+.react-datepicker__month-text {
+  text-transform: uppercase;
+}
+
+.filter-select {
+  text-transform: uppercase;
+}
+
+.react-datepicker__month-text {
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.react-datepicker__month-text:hover {
+  background-color: #e5e7eb;
+}
+
+.react-datepicker__month-text--selected {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+/* Mantenha os estilos existentes do filter-select para consistência */
+.filter-select {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.filter-select:hover {
+  border-color: #9ca3af;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}

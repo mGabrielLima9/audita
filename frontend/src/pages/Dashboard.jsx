@@ -4,23 +4,58 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { api } from '../services/api';
 import '../Dashboard.css';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import ptBR from 'date-fns/locale/pt-BR';
 
 const Dashboard = () => {
-  const [ano, setAno] = useState('2025');
-  const [mes, setMes] = useState('01');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [anoDate, setAnoDate] = useState(new Date(2025, 0));
+  const [mesDate, setMesDate] = useState(new Date(2025, 0));
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Dados mockados para quando a API não estiver disponível
+  // Anos disponíveis
+  const anos = ['2023', '2024', '2025'];
+
+  // Meses com nome e número
+  const meses = [
+    { num: '01', nome: 'Janeiro' },
+    { num: '02', nome: 'Fevereiro' },
+    { num: '03', nome: 'Março' },
+    { num: '04', nome: 'Abril' },
+    { num: '05', nome: 'Maio' },
+    { num: '06', nome: 'Junho' },
+    { num: '07', nome: 'Julho' },
+    { num: '08', nome: 'Agosto' },
+    { num: '09', nome: 'Setembro' },
+    { num: '10', nome: 'Outubro' },
+    { num: '11', nome: 'Novembro' },
+    { num: '12', nome: 'Dezembro' }
+  ];
+
+  // Função para formatar a data em ano e mês
+  const formatCompetencia = (date) => {
+    const ano = date.getFullYear().toString();
+    const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+    return { ano, mes };
+  };
+  
+  // Função para carregar dados apenas quando clicar em Pesquisar
+  const handlePesquisar = () => {
+    const { ano } = formatCompetencia(anoDate);
+    const { mes } = formatCompetencia(mesDate);
+    loadDashboardData(ano, mes);
+  };
+
+  // Dados mockados para quando a API não estiver disponível - MODIFICAR
   const mockData = {
-    estabelecimentos_ativos: 7055,
-    empresas_optantes: 6794,
-    empresas_declararam: 5856,
-    empresas_nao_declararam: 938,
-    empresas_inadimplentes: 550,
-    percentual_declararam: 86.19
+    estabelecimentos_ativos: 0,
+    empresas_optantes: 0,
+    empresas_declararam: 0,
+    empresas_nao_declararam: 0,
+    empresas_inadimplentes: 0,
+    percentual_declararam: 0
   };
 
   // Carregar dados do dashboard
@@ -33,29 +68,30 @@ const Dashboard = () => {
       const data = await api.getDashboardData(competencia);
       setDashboardData(data);
     } catch (err) {
-      console.log('API não disponível, usando dados mockados');
+      console.log('Dados não encontrados para esta competência, usando zeros');
       setDashboardData(mockData);
-      setError(null); // Não mostrar erro se usar dados mockados
+      setError(null);
     } finally {
       setLoading(false);
     }
   };
 
+  // Remover estas funções que não são mais necessárias
+  // const handleAnoChange = (novoAno) => {
+  //   setAno(novoAno);
+  //   loadDashboardData(novoAno, mes);
+  // };
+  
+  // const handleMesChange = (novoMes) => {
+  //   setMes(novoMes);
+  //   loadDashboardData(ano, novoMes);
+  // };
+  
   // Carregar dados iniciais
   useEffect(() => {
+    const { ano, mes } = formatCompetencia(anoDate);
     loadDashboardData(ano, mes);
   }, []);
-
-  // Quando ano ou mês muda
-  const handleAnoChange = (novoAno) => {
-    setAno(novoAno);
-    loadDashboardData(novoAno, mes);
-  };
-
-  const handleMesChange = (novoMes) => {
-    setMes(novoMes);
-    loadDashboardData(ano, novoMes);
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -63,21 +99,45 @@ const Dashboard = () => {
     console.log('Pesquisando:', searchTerm);
   };
 
-  // Dados para o gráfico (12 meses)
-  const chartData = [
-    { mes: 'Jan', totalDAS: 1708459.52, totalDASPago: 14900000.00, totalISS: 50000, totalISSPago: 45000 },
-    { mes: 'Fev', totalDAS: 1800000.00, totalDASPago: 15000000.00, totalISS: 52000, totalISSPago: 48000 },
-    { mes: 'Mar', totalDAS: 1900000.00, totalDASPago: 16000000.00, totalISS: 55000, totalISSPago: 50000 },
-    { mes: 'Abr', totalDAS: 2000000.00, totalDASPago: 17000000.00, totalISS: 58000, totalISSPago: 52000 },
-    { mes: 'Mai', totalDAS: 2100000.00, totalDASPago: 18000000.00, totalISS: 60000, totalISSPago: 55000 },
-    { mes: 'Jun', totalDAS: 2200000.00, totalDASPago: 19000000.00, totalISS: 62000, totalISSPago: 58000 },
-    { mes: 'Jul', totalDAS: 2300000.00, totalDASPago: 20000000.00, totalISS: 65000, totalISSPago: 60000 },
-    { mes: 'Ago', totalDAS: 2400000.00, totalDASPago: 21000000.00, totalISS: 68000, totalISSPago: 63000 },
-    { mes: 'Set', totalDAS: 2500000.00, totalDASPago: 22000000.00, totalISS: 70000, totalISSPago: 65000 },
-    { mes: 'Out', totalDAS: 2600000.00, totalDASPago: 23000000.00, totalISS: 72000, totalISSPago: 68000 },
-    { mes: 'Nov', totalDAS: 2700000.00, totalDASPago: 24000000.00, totalISS: 75000, totalISSPago: 70000 },
-    { mes: 'Dez', totalDAS: 2800000.00, totalDASPago: 25000000.00, totalISS: 78000, totalISSPago: 73000 }
-  ];
+  // Estado para armazenar dados do gráfico
+  const [chartData, setChartData] = useState([]);
+
+  // Carregar dados para o gráfico
+  const loadChartData = async () => {
+    const { ano } = formatCompetencia(anoDate); // Usar o ano do estado anoDate
+    const meses = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    const nomeMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    const dados = await Promise.all(
+      meses.map(async (mes, index) => {
+        try {
+          const data = await api.getDashboardData(`${ano}${mes}`);
+          return {
+            mes: nomeMeses[index],
+            totalDAS: data.valor_declarado_total,
+            totalDASPago: data.valor_iss_pago,
+            totalISS: data.valor_iss_declarado,
+            totalISSPago: data.valor_iss_pago
+          };
+        } catch (error) {
+          return {
+            mes: nomeMeses[index],
+            totalDAS: 0,
+            totalDASPago: 0,
+            totalISS: 0,
+            totalISSPago: 0
+          };
+        }
+      })
+    );
+
+    setChartData(dados);
+  };
+
+  // Carregar dados quando o ano mudar
+  useEffect(() => {
+    loadChartData();
+  }, [anoDate]); // Mudando a dependência para anoDate ao invés de ano
 
   // Adicionar estado para controlar visibilidade das séries
   const [visibleSeries, setVisibleSeries] = useState({
@@ -122,60 +182,42 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Cabeçalho da Página */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
         
         <div className="filters-section">
           <div className="filter-group">
-            <label htmlFor="ano">Competência Ano:</label>
-            <select 
-              id="ano"
-              value={ano} 
-              onChange={(e) => handleAnoChange(e.target.value)}
+            <label>Competência Ano:</label>
+            <DatePicker
+              selected={anoDate}
+              onChange={date => setAnoDate(date)}
+              showYearPicker
+              dateFormat="yyyy"
+              yearItemNumber={9}
+              locale={ptBR}
               className="filter-select"
-            >
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-            </select>
+            />
           </div>
 
           <div className="filter-group">
-            <label htmlFor="mes">Competência Mês:</label>
-            <select 
-              id="mes"
-              value={mes} 
-              onChange={(e) => handleMesChange(e.target.value)}
+            <label>Competência Mês:</label>
+            <DatePicker
+              selected={mesDate}
+              onChange={date => setMesDate(date)}
+              showMonthYearPicker
+              dateFormat="MMMM"
+              locale={ptBR}
               className="filter-select"
-            >
-              <option value="01">Janeiro</option>
-              <option value="02">Fevereiro</option>
-              <option value="03">Março</option>
-              <option value="04">Abril</option>
-              <option value="05">Maio</option>
-              <option value="06">Junho</option>
-              <option value="07">Julho</option>
-              <option value="08">Agosto</option>
-              <option value="09">Setembro</option>
-              <option value="10">Outubro</option>
-              <option value="11">Novembro</option>
-              <option value="12">Dezembro</option>
-            </select>
+              formatMonthCapitalize={true}
+            />
           </div>
 
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-            <button type="submit" className="search-btn">
-              Pesquisar
-            </button>
-          </form>
+          <button
+            onClick={handlePesquisar}
+            className="pesquisar-btn"
+          >
+            Pesquisar
+          </button>
         </div>
       </div>
 
@@ -183,7 +225,7 @@ const Dashboard = () => {
         <>
           {/* Informações Estatísticas */}
           <div className="stats-section">
-            <h2>Dados Simples Nacional - {mes === '01' ? 'Janeiro' : 'Julho'} {ano}</h2>
+            <h2>Dados Simples Nacional - {formatCompetencia(mesDate).mes === '01' ? 'Janeiro' : 'Julho'} {formatCompetencia(anoDate).ano}</h2>
             
             <div className="stats-grid">
               <div className="stat-card">
@@ -265,7 +307,7 @@ const Dashboard = () => {
                   <YAxis />
                   <Tooltip 
                     formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`}
-                    labelFormatter={(label) => `${label} 2025`}
+                    labelFormatter={(label) => `${label} ${formatCompetencia(anoDate).ano}`}
                   />
                   {visibleSeries.totalDAS && <Bar dataKey="totalDAS" fill="#2563eb" name="Total DAS Apuração" />}
                   {visibleSeries.totalDASPago && <Bar dataKey="totalDASPago" fill="#16a34a" name="Total DAS Pago" />}
